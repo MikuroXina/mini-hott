@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "es2022",
+        "allowJs": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "esModuleInterop": true,
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "verbatimModuleSyntax": true,
+        "outDir": "./dist",
+        "declarationDir": "./dist",
+        "baseUrl": "."
+    },
+    "exclude": ["node_modules", "dist"]
+}
