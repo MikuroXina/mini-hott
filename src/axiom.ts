@@ -31,14 +31,14 @@ export class Sequent extends Map<Variable, Term> {
     }
 }
 
-export type IsA = <I>(belong: (what: Term) => (type: Term) => I) => I;
-export const isA =
+export type Def = <I>(belong: (what: Term) => (type: Term) => I) => I;
+export const def =
     (what: Term) =>
-    (type: Term): IsA =>
+    (type: Term): Def =>
     (belong) =>
         belong(what)(type);
 
-export type Judgement = [antecedent: Sequent, consequent: IsA];
+export type Judgement = [antecedent: Sequent, consequent: Def];
 
 export type Infer = (judge: Judgement) => Judgement;
 
@@ -50,7 +50,7 @@ export type Infer = (judge: Judgement) => Judgement;
  */
 export const univIsALargerUniv = (level: Level): Judgement => [
     new Sequent(),
-    isA(universe(level))(universe(lSucc(level))),
+    def(universe(level))(universe(lSucc(level))),
 ];
 
 /**
@@ -62,7 +62,7 @@ export const liftUniv: Infer = ([antecedent, consequent]) => {
     const [a, i] = consequent((type) => (univ) => {
         return [type, unwrapUniverse(univ)];
     });
-    return [antecedent, isA(a)(universe(lSucc(i)))];
+    return [antecedent, def(a)(universe(lSucc(i)))];
 };
 
 /**
@@ -80,7 +80,7 @@ export const start =
             unwrapUniverse(type);
             return what;
         });
-        return [antecedent.with(name, newType), isA(variable(name))(newType)];
+        return [antecedent.with(name, newType), def(variable(name))(newType)];
     };
 
 /**
@@ -120,7 +120,7 @@ export const application =
         }
         const applied = replace(x)(a)(f);
         const appliedType = replace(x)(a)(fReturnType);
-        return [fn[0], isA(applied)(appliedType)];
+        return [fn[0], def(applied)(appliedType)];
     };
 
 /**
@@ -147,7 +147,7 @@ export const product =
             }
         });
         const [newReturnType, univ] = consequent((what) => (type) => [what, type]);
-        return [newAntecedent, isA(forAll(toPick)(toPickType)(newReturnType))(univ)];
+        return [newAntecedent, def(forAll(toPick)(toPickType)(newReturnType))(univ)];
     };
 
 /**
@@ -180,7 +180,7 @@ export const abstraction =
             }
             return what;
         });
-        return [typeAIsInUniv[0], isA(exists(target)(typeA)(valueB))(forAll(target)(typeA)(typeB))];
+        return [typeAIsInUniv[0], def(exists(target)(typeA)(valueB))(forAll(target)(typeA)(typeB))];
     };
 
 export type BetaReduce = (from: Term) => Term;
@@ -276,5 +276,5 @@ export const conversion =
             }
             return what;
         });
-        return [antecedent, isA(a)(typeB)];
+        return [antecedent, def(a)(typeB)];
     };
